@@ -43,6 +43,10 @@
 		"zod": "^3.24.2"
 	},
 	"dependencies": {
-		"mode-watcher": "^0.5.1"
+		"@tanstack/svelte-query": "^5.69.0",
+		"@tanstack/svelte-query-devtools": "^5.69.0",
+		"axios": "^1.8.4",
+		"mode-watcher": "^0.5.1",
+		"svelte-french-toast": "^1.2.0"
 	}
 }
