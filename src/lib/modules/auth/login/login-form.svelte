@@ -2,15 +2,35 @@
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { defaults, superForm } from 'sveltekit-superforms';
-	import { loginSchema } from '..';
+	import { loginSchema, type LoginInput, type LoginResponse } from '..';
 	import { zod } from 'sveltekit-superforms/adapters';
+	import { createMutation } from '@tanstack/svelte-query';
+	import toast from 'svelte-french-toast';
+	import axios from 'axios';
+
+	const loginMutation = createMutation({
+		mutationKey: ['login'],
+		mutationFn: async (user: LoginInput) =>
+			await axios.post('http://localhost:4000/v1/tokens/authentication', {
+				email: user.email,
+				password: user.password
+			}),
+		onSuccess: (e) => {
+			const loginResponse = e.data as LoginResponse;
+			sessionStorage.setItem('token', loginResponse.token.token);
+			toast.success('Logged in successfully!', { duration: 4000 });
+		}
+	});
 
 	const form = superForm(defaults(zod(loginSchema)), {
 		SPA: true,
 		validators: zod(loginSchema),
 		onUpdate({ form }) {
 			if (form.valid) {
-				// TODO: IMPLEMENT API CALL HERE BRO
+				$loginMutation.mutate({
+					email: form.data.email,
+					password: form.data.password
+				});
 			}
 		}
 	});
