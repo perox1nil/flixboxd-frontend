@@ -2,15 +2,35 @@
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { defaults, superForm } from 'sveltekit-superforms';
-	import { registerSchema } from '..';
+	import { registerSchema, type RegisterInput } from '..';
 	import { zod } from 'sveltekit-superforms/adapters';
+	import { createMutation } from '@tanstack/svelte-query';
+	import toast from 'svelte-french-toast';
+	import axios from 'axios';
+
+	const registerMutation = createMutation({
+		mutationKey: ['register'],
+		mutationFn: async (user: RegisterInput) =>
+			await axios.post('http://localhost:4000/v1/users', {
+				name: user.name,
+				email: user.email,
+				password: user.password
+			}),
+		onSuccess: () => {
+			toast.success('Registered successfully!', { duration: 4000 });
+		}
+	});
 
 	const form = superForm(defaults(zod(registerSchema)), {
 		SPA: true,
 		validators: zod(registerSchema),
 		onUpdate({ form }) {
 			if (form.valid) {
-				// TODO: IMPLEMENT API CALL HERE BRO
+				$registerMutation.mutate({
+					name: form.data.name,
+					email: form.data.email,
+					password: form.data.password
+				});
 			}
 		}
 	});
