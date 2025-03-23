@@ -8,6 +8,7 @@
 	import toast from 'svelte-french-toast';
 	import api, { type APIErrorResponse } from '$lib/api/axios';
 	import type { AxiosError } from 'axios';
+	import { goto } from '$app/navigation';
 
 	const loginMutation = createMutation({
 		mutationKey: ['login'],
@@ -19,6 +20,7 @@
 		onSuccess: (e) => {
 			const loginResponse = e.data as LoginResponse;
 			sessionStorage.setItem('token', loginResponse.token.token);
+			goto('/');
 			toast.success('Logged in successfully!', { duration: 4000 });
 		},
 		onError: (e: AxiosError<APIErrorResponse>) => {
