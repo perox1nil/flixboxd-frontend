@@ -6,18 +6,24 @@
 	import { zod } from 'sveltekit-superforms/adapters';
 	import { createMutation } from '@tanstack/svelte-query';
 	import toast from 'svelte-french-toast';
-	import axios from 'axios';
+	import api, { type APIErrorResponse } from '$lib/api/axios';
+	import type { AxiosError } from 'axios';
 
 	const registerMutation = createMutation({
 		mutationKey: ['register'],
 		mutationFn: async (user: RegisterInput) =>
-			await axios.post('http://localhost:4000/v1/users', {
+			await api.post('/users', {
 				name: user.name,
 				email: user.email,
 				password: user.password
 			}),
 		onSuccess: () => {
 			toast.success('Registered successfully!', { duration: 4000 });
+		},
+		onError: (e: AxiosError<APIErrorResponse>) => {
+			if (e.status === 422) {
+				toast.error(e.response?.data.error.email);
+			}
 		}
 	});
 

@@ -6,12 +6,13 @@
 	import { zod } from 'sveltekit-superforms/adapters';
 	import { createMutation } from '@tanstack/svelte-query';
 	import toast from 'svelte-french-toast';
-	import axios from 'axios';
+	import api, { type APIErrorResponse } from '$lib/api/axios';
+	import type { AxiosError } from 'axios';
 
 	const loginMutation = createMutation({
 		mutationKey: ['login'],
 		mutationFn: async (user: LoginInput) =>
-			await axios.post('http://localhost:4000/v1/tokens/authentication', {
+			await api.post('/tokens/authentication', {
 				email: user.email,
 				password: user.password
 			}),
@@ -19,6 +20,11 @@
 			const loginResponse = e.data as LoginResponse;
 			sessionStorage.setItem('token', loginResponse.token.token);
 			toast.success('Logged in successfully!', { duration: 4000 });
+		},
+		onError: (e: AxiosError<APIErrorResponse>) => {
+			if (e.status === 401) {
+				toast.error(e.response?.data.error);
+			}
 		}
 	});
 
