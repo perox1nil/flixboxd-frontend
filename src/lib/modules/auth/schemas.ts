@@ -14,3 +14,9 @@ export const loginSchema = z.object({
 });
 
 export type LoginSchema = typeof loginSchema;
+
+export const confirmSchema = z.object({
+	token: z.string().min(1, { message: 'Please enter a confirmation token' })
+});
+
+export type ConfirmSchema = typeof confirmSchema;

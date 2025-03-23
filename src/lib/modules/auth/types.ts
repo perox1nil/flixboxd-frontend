@@ -9,6 +9,10 @@ export type LoginInput = {
 	password: string;
 };
 
+export type ConfirmInput = {
+	token: string;
+};
+
 export type LoginResponse = {
 	token: {
 		token: string;
