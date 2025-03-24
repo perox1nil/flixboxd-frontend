@@ -2,26 +2,22 @@
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { defaults, superForm } from 'sveltekit-superforms';
-	import { loginSchema, type LoginInput, type LoginResponse } from '..';
+	import { login, loginSchema, type LoginResponse } from '..';
 	import { zod } from 'sveltekit-superforms/adapters';
 	import { createMutation } from '@tanstack/svelte-query';
 	import toast from 'svelte-french-toast';
-	import api, { type APIErrorResponse } from '$lib/api/axios';
+	import { type APIErrorResponse } from '$lib/api/axios';
 	import type { AxiosError } from 'axios';
-	import { goto } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 
 	const loginMutation = createMutation({
 		mutationKey: ['login'],
-		mutationFn: async (user: LoginInput) =>
-			await api.post('/tokens/authentication', {
-				email: user.email,
-				password: user.password
-			}),
+		mutationFn: login,
 		onSuccess: (e) => {
 			const loginResponse = e.data as LoginResponse;
 			sessionStorage.setItem('token', loginResponse.token.token);
-			goto('/');
 			toast.success('Logged in successfully!', { duration: 4000 });
+			invalidate('auth:user');
 		},
 		onError: (e: AxiosError<APIErrorResponse>) => {
 			if (e.status === 401) {
@@ -35,10 +31,7 @@
 		validators: zod(loginSchema),
 		onUpdate({ form }) {
 			if (form.valid) {
-				$loginMutation.mutate({
-					email: form.data.email,
-					password: form.data.password
-				});
+				$loginMutation.mutate(form.data);
 			}
 		}
 	});

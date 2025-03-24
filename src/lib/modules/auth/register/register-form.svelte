@@ -2,22 +2,17 @@
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { defaults, superForm } from 'sveltekit-superforms';
-	import { registerSchema, type RegisterInput } from '..';
+	import { register, registerSchema } from '..';
 	import { zod } from 'sveltekit-superforms/adapters';
 	import { createMutation } from '@tanstack/svelte-query';
 	import toast from 'svelte-french-toast';
-	import api, { type APIErrorResponse } from '$lib/api/axios';
+	import { type APIErrorResponse } from '$lib/api/axios';
 	import type { AxiosError } from 'axios';
 	import { goto } from '$app/navigation';
 
 	const registerMutation = createMutation({
 		mutationKey: ['register'],
-		mutationFn: async (user: RegisterInput) =>
-			await api.post('/users', {
-				name: user.name,
-				email: user.email,
-				password: user.password
-			}),
+		mutationFn: register,
 		onSuccess: () => {
 			toast.success('Registered successfully!', { duration: 4000 });
 			goto('/login');
@@ -34,11 +29,7 @@
 		validators: zod(registerSchema),
 		onUpdate({ form }) {
 			if (form.valid) {
-				$registerMutation.mutate({
-					name: form.data.name,
-					email: form.data.email,
-					password: form.data.password
-				});
+				$registerMutation.mutate(form.data);
 			}
 		}
 	});

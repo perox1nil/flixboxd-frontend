@@ -1,3 +1,4 @@
+import type { Infer } from 'sveltekit-superforms';
 import { z } from 'zod';
 
 export const registerSchema = z.object({
@@ -6,17 +7,17 @@ export const registerSchema = z.object({
 	password: z.string().min(8, { message: 'Password must be a minimum of 8 characters' })
 });
 
-export type RegisterSchema = typeof registerSchema;
+export type RegisterSchema = Infer<typeof registerSchema>;
 
 export const loginSchema = z.object({
 	email: z.string().email({ message: 'Please enter a valid email' }),
 	password: z.string().min(8, { message: 'Password must be a minimum of 8 characters' })
 });
 
-export type LoginSchema = typeof loginSchema;
+export type LoginSchema = Infer<typeof loginSchema>;
 
 export const confirmSchema = z.object({
 	token: z.string().min(1, { message: 'Please enter a confirmation token' })
 });
 
-export type ConfirmSchema = typeof confirmSchema;
+export type ConfirmSchema = Infer<typeof confirmSchema>;
