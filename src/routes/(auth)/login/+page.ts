@@ -1,10 +1,10 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = () => {
-	const token = sessionStorage.getItem('token');
+export const load: PageLoad = async ({ parent }) => {
+	const { user } = await parent();
 
-	if (token) {
-		return redirect(303, '/');
+	if (user) {
+		redirect(303, '/movies');
 	}
 };
