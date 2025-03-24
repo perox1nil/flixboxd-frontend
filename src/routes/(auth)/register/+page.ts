@@ -5,6 +5,6 @@ export const load: PageLoad = async ({ parent }) => {
 	const { user } = await parent();
 
 	if (user) {
-		redirect(303, '/movies');
+		redirect(303, '/');
 	}
 };
