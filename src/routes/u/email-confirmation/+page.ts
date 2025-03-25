@@ -7,4 +7,8 @@ export const load: PageLoad = async ({ parent }) => {
 	if (!user) {
 		goto('/login');
 	}
+
+	if (user?.activated) {
+		goto('/');
+	}
 };

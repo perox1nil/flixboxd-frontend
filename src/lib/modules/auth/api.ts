@@ -1,5 +1,5 @@
 import api from '$lib/api/axios';
-import type { LoginSchema, RegisterSchema } from './schemas';
+import type { ConfirmSchema, LoginSchema, RegisterSchema } from '.';
 
 // - QUERIES -
 export const authenticatedUser = async () => {
@@ -13,4 +13,8 @@ export const register = async (data: RegisterSchema) => {
 
 export const login = async (data: LoginSchema) => {
 	return await api.post('/tokens/authentication', JSON.stringify(data));
+};
+
+export const confirmEmail = async (data: ConfirmSchema) => {
+	return await api.put('/users/activated', JSON.stringify(data));
 };

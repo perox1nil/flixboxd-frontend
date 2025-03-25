@@ -8,7 +8,7 @@
 	import toast from 'svelte-french-toast';
 	import { type APIErrorResponse } from '$lib/api/axios';
 	import type { AxiosError } from 'axios';
-	import { goto, invalidate } from '$app/navigation';
+	import { invalidate } from '$app/navigation';
 
 	const loginMutation = createMutation({
 		mutationKey: ['login'],

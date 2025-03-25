@@ -5,20 +5,17 @@
 	import { zod } from 'sveltekit-superforms/adapters';
 	import { createMutation } from '@tanstack/svelte-query';
 	import toast from 'svelte-french-toast';
-	import api, { type APIErrorResponse } from '$lib/api/axios';
+	import { type APIErrorResponse } from '$lib/api/axios';
 	import type { AxiosError } from 'axios';
-	import { confirmSchema, type ConfirmInput, type LoginResponse } from '..';
+	import { confirmEmail, confirmSchema } from '..';
+	import { invalidate } from '$app/navigation';
 
 	const confirmMutation = createMutation({
 		mutationKey: ['email-confirmation'],
-		mutationFn: async (user: ConfirmInput) =>
-			await api.post('/tokens/authentication', {
-				token: user.token
-			}),
-		onSuccess: (e) => {
-			const loginResponse = e.data as LoginResponse;
-			sessionStorage.setItem('token', loginResponse.token.token);
-			toast.success('Logged in successfully!', { duration: 4000 });
+		mutationFn: confirmEmail,
+		onSuccess: () => {
+			toast.success('Email confirmed successfully!');
+			invalidate('auth:user');
 		},
 		onError: (e: AxiosError<APIErrorResponse>) => {
 			if (e.status === 401) {
@@ -50,7 +47,7 @@
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label>Token</Form.Label>
-				<Input type="email" {...props} bind:value={$formData.token} />
+				<Input {...props} bind:value={$formData.token} />
 			{/snippet}
 		</Form.Control>
 		<Form.FieldErrors />
