@@ -1,11 +1,24 @@
 <script lang="ts">
-	import { getMovies } from '$lib/modules/movies';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import { deleteMovie, getMovies } from '$lib/modules/movies';
 	import { CreateMovieForm } from '$lib/modules/movies/create-movie';
-	import { createQuery } from '@tanstack/svelte-query';
+	import { createMutation, createQuery, getQueryClientContext } from '@tanstack/svelte-query';
+	import toast from 'svelte-french-toast';
+
+	const queryClient = getQueryClientContext();
 
 	const query = createQuery({
 		queryKey: ['movies'],
 		queryFn: getMovies
+	});
+
+	const deleteMutation = createMutation({
+		mutationKey: ['movies'],
+		mutationFn: deleteMovie,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['movies'] });
+			toast.success('Deleted successfully!');
+		}
 	});
 </script>
 
@@ -26,11 +39,17 @@
 	{/if}
 	{#if $query.data?.data.movies}
 		{#each $query.data.data.movies as movie}
-			<div class="border p-3">
-				<p>Title: {movie.title}</p>
-				<p>Year: {movie.year}</p>
-				<p>Runtime: {movie.runtime}</p>
-				<p>Genres: {movie.genres}</p>
+			<div class="flex flex-row items-center justify-between border p-3">
+				<div>
+					<p>Title: {movie.title}</p>
+					<p>Year: {movie.year}</p>
+					<p>Runtime: {movie.runtime}</p>
+					<p>Genres: {movie.genres}</p>
+				</div>
+				<div>
+					<Button>Update</Button>
+					<Button onclick={() => $deleteMutation.mutate(movie.id)}>Delete</Button>
+				</div>
 			</div>
 		{/each}
 	{/if}
