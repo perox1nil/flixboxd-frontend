@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { deleteMovie, getMovies } from '$lib/modules/movies';
 	import { CreateMovieForm } from '$lib/modules/movies/create-movie';
@@ -47,7 +48,7 @@
 					<p>Genres: {movie.genres}</p>
 				</div>
 				<div>
-					<Button>Update</Button>
+					<Button onclick={() => goto(`/movies/${movie.id}`)}>View Movie</Button>
 					<Button onclick={() => $deleteMutation.mutate(movie.id)}>Delete</Button>
 				</div>
 			</div>
