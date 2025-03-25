@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
+import type { LayoutLoad } from './$types';
 
-export const load: PageLoad = async ({ parent }) => {
+export const load: LayoutLoad = async ({ parent }) => {
 	const { user } = await parent();
 
 	if (!user) {
@@ -10,9 +10,5 @@ export const load: PageLoad = async ({ parent }) => {
 
 	if (!user.activated) {
 		redirect(303, '/u/email-confirmation');
-	}
-
-	if (user.activated) {
-		redirect(303, '/movies');
 	}
 };
